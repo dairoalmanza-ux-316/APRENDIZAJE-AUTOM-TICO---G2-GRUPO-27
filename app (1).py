@@ -83,27 +83,47 @@ with tab_pred:
             st.success("✅ La Red Neuronal indica un **BAJO RIESGO** de enfermedad cardíaca.")
 
 with tab_graficas:
-    st.subheader("📊 Visualización de Activación y Desempeño")
-    col_g1, col_g2 = st.columns(2)
-    
+    st.subheader("📊 Evaluación del Modelo y Funciones de Activación")
+
+    # 1. Tarjetas con las métricas obtenidas en Google Colab (Reemplaza con tus valores reales)
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Loss (Pérdida)", "0.3412")
+    m2.metric("Accuracy (Exactitud)", "85.25%")
+    m3.metric("F1-Score", "0.8571")
+
+    st.divider()
+
+    col_g1, col_g2, col_g3 = st.columns(3)
+
     with col_g1:
-        st.markdown("### 1. Función de Activación (ReLU y Sigmoid)")
-        fig1, ax1 = plt.subplots(figsize=(5, 3.5))
+        st.markdown("### 1. Matriz de Confusión")
+        # Reemplaza [[TN, FP], [FN, TP]] con los 4 números de tu matriz en Colab
+        cm = np.array([[28, 5],
+                       [4, 24]])
+        fig_cm, ax_cm = plt.subplots(figsize=(4.5, 3.5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax_cm,
+                    xticklabels=["Pred: Sano (0)", "Pred: Riesgo (1)"],
+                    yticklabels=["Real: Sano (0)", "Real: Riesgo (1)"])
+        ax_cm.set_ylabel("Valor Real")
+        ax_cm.set_xlabel("Predicción")
+        st.pyplot(fig_cm)
+
+    with col_g2:
+        st.markdown("### 2. Función de Activación")
+        fig1, ax1 = plt.subplots(figsize=(4.5, 3.5))
         z = np.linspace(-5, 5, 200)
         ax1.plot(z, np.maximum(0, z), label="ReLU (Oculta)", linewidth=2)
         ax1.plot(z, 1 / (1 + np.exp(-z)), label="Sigmoid (Salida)", linewidth=2, linestyle="--")
-        ax1.axhline(0.5, color="red", linestyle=":", label="Umbral decisión (0.5)")
-        ax1.set_title("Funciones de Activación")
+        ax1.axhline(0.5, color="red", linestyle=":", label="Umbral (0.5)")
         ax1.set_xlabel("Entrada (z)")
         ax1.legend()
         ax1.grid(True, alpha=0.3)
         st.pyplot(fig1)
 
-    with col_g2:
-        st.markdown("### 2. Distribución de Pacientes en Dataset")
-        fig2, ax2 = plt.subplots(figsize=(5, 3.5))
+    with col_g3:
+        st.markdown("### 3. Clases del Dataset")
+        fig2, ax2 = plt.subplots(figsize=(4.5, 3.5))
         sns.barplot(x=["Sano (0)", "Riesgo (1)"], y=[164, 139], palette="Set2", ax=ax2)
-        ax2.set_title("Clases del Dataset Heart Disease")
         ax2.set_ylabel("Cantidad")
         ax2.grid(axis="y", linestyle="--", alpha=0.7)
         st.pyplot(fig2)
